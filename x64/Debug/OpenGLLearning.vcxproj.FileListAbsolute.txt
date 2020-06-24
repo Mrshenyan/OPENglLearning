@@ -1,0 +1,2 @@
+D:\My\OPGL\OpenGL\OpenGLLearning\x64\Debug\OpenGLLearning.exe
+D:\My\OPGL\OpenGL\OpenGLLearning\x64\Debug\OpenGLLearning.pdb
