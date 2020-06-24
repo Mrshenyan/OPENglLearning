@@ -25,11 +25,14 @@ const char *vertexShaderSource = "#version 460 core\n"
 "{\n"
 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 "}\0";
+/// <summary>
+/// 片段着色器 GLSL代码 FragColor即为最终输出的颜色。
+/// </summary>
 const char * framgmentShaderSource ="#version 460 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "   FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
 	"}\n\0";
 
 int main()
@@ -61,6 +64,7 @@ int main()
 
 	int success;
 	char infoLog[512];
+	//顶点着色器
 	int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
@@ -69,7 +73,7 @@ int main()
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
 		cout << "ERROR: shader::vertex::compilation failed\n" << infoLog << endl;
 	}
-
+	//片段着色器
 	int framgmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(framgmentShader, 1, &framgmentShaderSource, NULL);
 	glCompileShader(framgmentShader);
@@ -78,10 +82,10 @@ int main()
 		glGetShaderInfoLog(framgmentShader, 512, NULL, infoLog);
 		cout << "ERROR: shader::framgment::compilation failed\n" << infoLog << endl;
 	}
-
+	//着色器程序
 	int shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, framgmentShader);
+	glAttachShader(shaderProgram, framgmentShader);//链接两个着色器到着色器程序上
 	glLinkProgram(shaderProgram);
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 
@@ -92,15 +96,16 @@ int main()
 	/// </summary>
 	/// <returns></returns>
 	unsigned int VBO,VAO;
-	glGenVertexArrays(1, &VAO);
+	glGenVertexArrays(1, &VAO);//初始化
 	glGenBuffers(1, &VBO);
-	glBindVertexArray(VAO);
+	glBindVertexArray(VAO);//绑定顶点着色器
+	//复制顶点数组到缓冲中
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 03, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	//设置顶点属性指针
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);//指定解析顶点数据
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
-	glUseProgram(shaderProgram);
 
 
 	glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -112,16 +117,17 @@ int main()
 		processInput(window);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-		glUseProgram(shaderProgram);
+
+		glUseProgram(shaderProgram);//激活着色器程序对象
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 3);//绘制三角形
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 	glDeleteVertexArrays(1,&VAO);
 	glDeleteBuffers(1, &VBO);
-	glDeleteProgram(shaderProgram);
+	glDeleteProgram(shaderProgram);//删除着色器对象以及着色器程序对象
 	glfwTerminate();
 	return 0;
 }
